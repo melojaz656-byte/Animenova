@@ -10,7 +10,7 @@ header{height:70px;display:flex;align-items:center;gap:24px;padding:0 5%;backgro
 @media(max-width:1050px){.grid{grid-template-columns:repeat(4,1fr)}.search{width:170px}}@media(max-width:700px){header{gap:10px;padding:0 4%}nav{display:none}.search{width:120px}.hero{min-height:500px}.grid{grid-template-columns:repeat(2,1fr)}.poster{height:230px}.continue,.features{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr}}
 .adminnav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.adminnav button.active{background:var(--accent)}.adminpanel{background:#07101d;border:1px solid var(--line);border-radius:10px;padding:16px;margin-top:12px}.adminitem{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px;border-bottom:1px solid var(--line)}.adminitem:last-child{border-bottom:0}.mini{padding:7px 10px;font-size:12px}.danger{background:#35131d;border:1px solid #713047;color:#fff}.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:700px){.admin-grid{grid-template-columns:1fr}}</style></head>
 <body>
-<header><a class="logo" href="#inicio">Anime<span>Nova</span></a><nav><a href="#inicio">Inicio</a><a href="#catalogo">Catálogo</a><a href="#tendencias">Tendencias</a><a href="#lista">Mi Lista</a><a href="#historial">Historial</a><a id="adminNav" href="#adminSection" style="display:none;color:var(--accent);font-weight:800">⚙️ Admin</a></nav><input id="search" class="search" placeholder="🔎 Buscar anime"><button id="authBtn" class="btn primary">Entrar</button></header>
+<header><a class="logo" href="#inicio">Anime<span>Nova</span></a><nav><a href="#inicio">Inicio</a><a href="#catalogo">Catálogo</a><a href="#tendencias">Tendencias</a><a href="#lista">Mi Lista</a><a href="#historial">Historial</a><a id="adminNav" href="/admin" style="display:none;color:var(--accent);font-weight:800">⚙️ Admin</a></nav><input id="search" class="search" placeholder="🔎 Buscar anime"><button id="authBtn" class="btn primary">Entrar</button></header>
 <main id="inicio">
 <section class="hero"><div><span class="tag">ANIMENOVA</span><h1>Tu mundo de anime.</h1><p>Catálogo, favoritos, historial y episodios en un solo lugar. Inicia sesión para guardar tu progreso en la nube.</p><div class="actions"><button class="btn primary" onclick="document.getElementById('catalogo').scrollIntoView()">▶ Explorar catálogo</button><button class="btn ghost" id="heroAuth">Crear cuenta</button></div></div></section>
 <section class="section" id="catalogo"><div class="sectionhead"><h2>🔥 Catálogo</h2><span id="catalogStatus" class="muted"></span></div><div id="catalog" class="grid"></div></section>
@@ -150,6 +150,16 @@ async function refreshSession(){
   profile=null;document.getElementById('authBtn').textContent='Entrar';document.getElementById('adminSection').style.display='none';document.getElementById('adminNav').style.display='none';
  }
  await Promise.all([loadFavorites(),loadHistory(),loadCatalog()]);
+ if(location.pathname==='/admin' || location.pathname.startsWith('/admin/')){
+  if(profile?.role==='admin'){
+   document.getElementById('adminSection').style.display='block';
+   renderAdmin();
+   document.getElementById('adminSection').scrollIntoView({behavior:'smooth',block:'start'});
+  }else{
+   document.getElementById('authMsg').innerHTML='<div class="msg error">Inicia sesión con una cuenta de administrador para entrar aquí.</div>';
+   openModal('authModal');
+  }
+ }
 }
 function toggleAuthMode(){authMode=authMode==='login'?'signup':'login';document.getElementById('authTitle').textContent=authMode==='login'?'Iniciar sesión':'Crear cuenta';document.getElementById('authSubmit').textContent=authMode==='login'?'Entrar':'Registrarme';document.getElementById('toggleAuth').textContent=authMode==='login'?'Crear una cuenta':'Ya tengo una cuenta';document.getElementById('username').style.display=authMode==='login'?'none':'block'}
 async function submitAuth(){
