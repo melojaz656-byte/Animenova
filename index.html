@@ -154,7 +154,7 @@ async function refreshSession(){
 function toggleAuthMode(){authMode=authMode==='login'?'signup':'login';document.getElementById('authTitle').textContent=authMode==='login'?'Iniciar sesión':'Crear cuenta';document.getElementById('authSubmit').textContent=authMode==='login'?'Entrar':'Registrarme';document.getElementById('toggleAuth').textContent=authMode==='login'?'Crear una cuenta':'Ya tengo una cuenta';document.getElementById('username').style.display=authMode==='login'?'none':'block'}
 async function submitAuth(){
  if(!sb)return; const email=document.getElementById('email').value.trim(),password=document.getElementById('password').value,msg=document.getElementById('authMsg'); if(!email||!password){msg.innerHTML='<div class="msg error">Completa correo y contraseña.</div>';return}
- const r=authMode==='login'?await sb.auth.signInWithPassword({email,password}):await sb.auth.signUp({email,password,options:{data:{username:document.getElementById('username').value.trim()}}});
+ const r=authMode==='login'?await sb.auth.signInWithPassword({email,password}):await sb.auth.signUp({email,password,options:{data:{username:document.getElementById('username').value.trim()},emailRedirectTo:window.location.origin+'/'}});
  if(r.error){msg.innerHTML='<div class="msg error">'+esc(r.error.message)+'</div>';return}
  msg.innerHTML='<div class="msg success">Cuenta lista. Revisa tu correo si se solicita confirmación.</div>';if(authMode==='login'){closeModal('authModal');await refreshSession()}
 }
