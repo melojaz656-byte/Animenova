@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AnimeNova — Administrador</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#050811;--panel:#0b1220;--panel2:#101a2b;--text:#f5f7fb;--muted:#93a0b5;--accent:#ff174f;--line:#1d2b43}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 80% 0,#24152c,#050811 42%);color:var(--text);font-family:Inter,system-ui,Segoe UI,sans-serif}
+header{height:70px;padding:0 5%;display:flex;align-items:center;gap:20px;border-bottom:1px solid var(--line);background:#060b15ee;position:sticky;top:0;z-index:5}.logo{font-size:24px;font-weight:900}.logo span{color:var(--accent)}header a{color:var(--muted);text-decoration:none}.right{margin-left:auto;display:flex;gap:10px;align-items:center}
+main{max-width:1250px;margin:auto;padding:35px 5%}.box{background:#091322;border:1px solid #29405e;border-radius:14px;padding:22px;margin-bottom:18px}.login{max-width:470px;margin:8vh auto}.tag{display:inline-block;background:var(--accent);padding:6px 9px;border-radius:5px;font-size:10px;font-weight:900}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px}.tabs button.active{background:var(--accent)}button,input,textarea,select{font:inherit}button{cursor:pointer}.btn{border:0;border-radius:8px;padding:10px 14px;font-weight:800}.primary{background:var(--accent);color:#fff}.ghost{background:#101c2e;border:1px solid #2b415e;color:#fff}.danger{background:#35131d;border:1px solid #713047;color:#fff}.field{width:100%;margin:6px 0;padding:11px;background:#06101d;border:1px solid #29405e;color:#fff;border-radius:8px}.msg{padding:10px;border-radius:8px;margin:10px 0}.error{background:#3b1220;color:#ffb3c2}.success{background:#123522;color:#b8f5cf}.muted{color:var(--muted)}.item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}.item:last-child{border-bottom:0}.hidden{display:none}
+@media(max-width:700px){.grid{grid-template-columns:1fr}header{padding:0 4%}}
+</style>
+</head>
+<body>
+<header><a class="logo" href="/"><span>Anime</span>Nova</a><strong>⚙️ Administrador</strong><div class="right"><a href="/">Volver al sitio</a><button id="logout" class="btn ghost hidden">Salir</button></div></header>
+<main>
+<section id="loginBox" class="box login">
+<span class="tag">ANIMENOVA</span><h1>Panel administrador</h1>
+<p class="muted">Inicia sesión con la cuenta que tenga rol <b>admin</b>.</p>
+<input id="email" class="field" type="email" placeholder="Correo electrónico">
+<input id="password" class="field" type="password" placeholder="Contraseña">
+<div id="loginMsg"></div><button id="loginBtn" class="btn primary" style="width:100%">Entrar</button>
+</section>
+
+<section id="adminBox" class="hidden">
+<div class="box">
+<div style="display:flex;justify-content:space-between;gap:15px;align-items:center;flex-wrap:wrap"><div><span class="tag">ANIMENOVA</span><h1 style="margin:12px 0 5px">Panel de control</h1><p class="muted" style="margin:0">Aquí puedes crear anime → temporadas → episodios sin abrir Supabase.</p></div><div id="who" class="muted"></div></div>
+</div>
+<div class="box">
+<div class="tabs"><button class="btn primary active" data-tab="anime">🎬 Anime</button><button class="btn ghost" data-tab="season">📚 Temporadas</button><button class="btn ghost" data-tab="episode">▶ Episodios</button></div>
+<div id="msg"></div>
+
+<div id="animeTab">
+<h2>Agregar anime</h2>
+<div class="grid"><input id="aTitle" class="field" placeholder="Título"><input id="aSlug" class="field" placeholder="Slug, ej. one-piece"></div>
+<textarea id="aSynopsis" class="field" placeholder="Sinopsis"></textarea>
+<div class="grid"><input id="aPoster" class="field" placeholder="URL del poster"><input id="aBanner" class="field" placeholder="URL del banner"></div>
+<div class="grid"><input id="aYear" class="field" type="number" placeholder="Año"><input id="aRating" class="field" type="number" min="0" max="10" step=".1" placeholder="Rating 0-10"></div>
+<input id="aGenres" class="field" placeholder="Géneros separados por coma">
+<button class="btn primary" onclick="addAnime()">➕ Crear anime</button>
+<h3>Anime existentes</h3><div id="animeList"></div>
+</div>
+
+<div id="seasonTab" class="hidden">
+<h2>Crear temporada</h2>
+<select id="sAnime" class="field"></select>
+<div class="grid"><input id="sNumber" class="field" type="number" min="1" placeholder="Número de temporada"><input id="sTitle" class="field" placeholder="Título opcional"></div>
+<button class="btn primary" onclick="addSeason()">➕ Crear temporada</button>
+<div id="seasonList" style="margin-top:18px"></div>
+</div>
+
+<div id="episodeTab" class="hidden">
+<h2>Crear episodio</h2>
+<select id="eAnime" class="field"></select>
+<select id="eSeason" class="field"></select>
+<div class="grid"><input id="eNumber" class="field" type="number" min="1" placeholder="Número de episodio"><input id="eTitle" class="field" placeholder="Título"></div>
+<input id="eVideo" class="field" placeholder="URL directa del video MP4/HLS autorizado">
+<textarea id="eSynopsis" class="field" placeholder="Descripción del episodio"></textarea>
+<label style="display:flex;gap:8px;align-items:center;margin:10px 0"><input id="ePublished" type="checkbox" checked> Publicar inmediatamente</label>
+<button class="btn primary" onclick="addEpisode()">➕ Crear episodio</button>
+<div id="episodeList" style="margin-top:18px"></div>
+</div>
+</div>
+</section>
+</main>
+<script>
+const SUPABASE_URL='https://bhwvjxrenahsntigxuvy.supabase.co';
+const SUPABASE_KEY='sb_publishable_KJczwALk5beg8nqhhqm1Rw_ssKW3s_M';
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let user=null;
+
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+const msg=(t,err=false)=>document.getElementById('msg').innerHTML='<div class="msg '+(err?'error':'success')+'">'+esc(t)+'</div>';
+async function profile(){if(!user)return null;const {data,error}=await sb.from('profiles').select('id,username,role').eq('id',user.id).maybeSingle();if(error)throw error;return data}
+async function boot(){
+ const {data}=await sb.auth.getUser(); user=data?.user||null;
+ if(!user){showLogin();return}
+ const p=await profile();
+ if(!p||p.role!=='admin'){document.getElementById('loginMsg').innerHTML='<div class="msg error">Esta cuenta no tiene permisos de administrador.</div>';await sb.auth.signOut();showLogin();return}
+ document.getElementById('loginBox').classList.add('hidden');document.getElementById('adminBox').classList.remove('hidden');document.getElementById('logout').classList.remove('hidden');document.getElementById('who').textContent=p.username||user.email;
+ await Promise.all([loadAnime(),loadSeasonsFor('sAnime'),loadSeasonsFor('eAnime')]);
+}
+function showLogin(){document.getElementById('loginBox').classList.remove('hidden');document.getElementById('adminBox').classList.add('hidden');document.getElementById('logout').classList.add('hidden')}
+async function login(){const email=document.getElementById('email').value.trim(),password=document.getElementById('password').value;const el=document.getElementById('loginMsg');el.innerHTML='';if(!email||!password){el.innerHTML='<div class="msg error">Completa correo y contraseña.</div>';return}const {error}=await sb.auth.signInWithPassword({email,password});if(error){el.innerHTML='<div class="msg error">'+esc(error.message)+'</div>';return}await boot()}
+async function loadAnime(){const {data,error}=await sb.from('anime').select('id,title,slug,poster_url,year,rating').order('title');if(error){msg(error.message,true);return}const opts=(data||[]).map(a=>'<option value="'+a.id+'">'+esc(a.title)+'</option>').join('')||'<option value="">Sin anime</option>';document.getElementById('sAnime').innerHTML=opts;document.getElementById('eAnime').innerHTML=opts;document.getElementById('animeList').innerHTML=(data||[]).map(a=>'<div class="item"><span><b>'+esc(a.title)+'</b><br><small class="muted">'+esc(a.slug||'')+'</small></span></div>').join('')||'<p class="muted">No hay anime.</p>'}
+async function loadSeasonsFor(selectId){const animeId=document.getElementById(selectId)?.value;if(!animeId)return;const {data,error}=await sb.from('seasons').select('id,season_number,title').eq('anime_id',animeId).order('season_number');if(error){msg(error.message,true);return}if(selectId==='sAnime')document.getElementById('seasonList').innerHTML=(data||[]).map(s=>'<div class="item"><span>T'+s.season_number+' — '+esc(s.title||'Temporada '+s.season_number)+'</span><button class="btn danger" onclick="delSeason(\''+s.id+'\')">Eliminar</button></div>').join('')||'<p class="muted">No hay temporadas.</p>';document.getElementById('eSeason').innerHTML=(data||[]).map(s=>'<option value="'+s.id+'">T'+s.season_number+' — '+esc(s.title||'Temporada '+s.season_number)+'</option>').join('')||'<option value="">Sin temporadas</option>';await loadEpisodes()}
+async function loadEpisodes(){const sid=document.getElementById('eSeason')?.value;if(!sid)return;const {data,error}=await sb.from('episodes').select('id,episode_number,title,published').eq('season_id',sid).order('episode_number');if(error){msg(error.message,true);return}document.getElementById('episodeList').innerHTML=(data||[]).map(e=>'<div class="item"><span><b>E'+e.episode_number+'</b> — '+esc(e.title)+' <small class="muted">'+(e.published?'Publicado':'Borrador')+'</small></span><button class="btn danger" onclick="delEpisode(\''+e.id+'\')">Eliminar</button></div>').join('')||'<p class="muted">No hay episodios.</p>'}
+async function addAnime(){const v=id=>document.getElementById(id).value.trim();const title=v('aTitle'),slug=v('aSlug');if(!title||!slug){msg('Título y slug son obligatorios.',true);return}const {error}=await sb.from('anime').insert({title,slug,synopsis:v('aSynopsis')||null,poster_url:v('aPoster')||null,banner_url:v('aBanner')||null,year:Number(v('aYear'))||null,rating:Number(v('aRating'))||null,genres:v('aGenres').split(',').map(x=>x.trim()).filter(Boolean)});if(error){msg(error.message,true);return}msg('Anime creado correctamente.');document.querySelectorAll('#animeTab input,#animeTab textarea').forEach(x=>x.value='');await loadAnime()}
+async function addSeason(){const anime_id=document.getElementById('sAnime').value,season_number=Number(document.getElementById('sNumber').value),title=document.getElementById('sTitle').value.trim();if(!anime_id||!season_number){msg('Selecciona anime y número de temporada.',true);return}const {error}=await sb.from('seasons').insert({anime_id,season_number,title:title||('Temporada '+season_number)});if(error){msg(error.message,true);return}msg('Temporada creada.');document.getElementById('sNumber').value='';document.getElementById('sTitle').value='';await loadSeasonsFor('sAnime')}
+async function addEpisode(){const body={season_id:document.getElementById('eSeason').value,episode_number:Number(document.getElementById('eNumber').value),title:document.getElementById('eTitle').value.trim(),video_url:document.getElementById('eVideo').value.trim()||null,synopsis:document.getElementById('eSynopsis').value.trim()||null,published:document.getElementById('ePublished').checked};if(!body.season_id||!body.episode_number||!body.title){msg('Temporada, número y título son obligatorios.',true);return}const {error}=await sb.from('episodes').insert(body);if(error){msg(error.message,true);return}msg('Episodio creado.');document.getElementById('eNumber').value='';document.getElementById('eTitle').value='';document.getElementById('eVideo').value='';document.getElementById('eSynopsis').value='';await loadEpisodes()}
+async function delSeason(id){if(!confirm('¿Eliminar esta temporada?'))return;const {error}=await sb.from('seasons').delete().eq('id',id);if(error){msg(error.message,true);return}msg('Temporada eliminada.');await loadSeasonsFor('sAnime')}
+async function delEpisode(id){if(!confirm('¿Eliminar este episodio?'))return;const {error}=await sb.from('episodes').delete().eq('id',id);if(error){msg(error.message,true);return}msg('Episodio eliminado.');await loadEpisodes()}
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.querySelectorAll('[id$="Tab"]').forEach(x=>x.classList.add('hidden'));document.getElementById(b.dataset.tab+'Tab').classList.remove('hidden')});
+document.getElementById('loginBtn').onclick=login;document.getElementById('logout').onclick=async()=>{await sb.auth.signOut();user=null;showLogin()};document.getElementById('sAnime').onchange=()=>loadSeasonsFor('sAnime');document.getElementById('eAnime').onchange=()=>loadSeasonsFor('eAnime');document.getElementById('eSeason').onchange=loadEpisodes;
+sb.auth.onAuthStateChange(()=>setTimeout(boot,0));boot();
+</script>
+</body>
+</html>
