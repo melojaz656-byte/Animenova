@@ -23,7 +23,7 @@ header{height:70px;display:flex;align-items:center;gap:24px;padding:0 5%;backgro
 <div class="box" style="width:100%;max-height:none">
 <div id="adminMsg"></div>
 <div class="adminnav"><button class="btn primary active" id="tabAnime" onclick="showAdminTab('anime')">🎬 Anime</button><button class="btn ghost" id="tabSeason" onclick="showAdminTab('season')">📚 Temporadas</button><button class="btn ghost" id="tabEpisode" onclick="showAdminTab('episode')">▶ Episodios</button></div>
-<div id="adminAnimePanel" class="adminpanel">
+<div id="adminAnimePanel" class="adminpanel" data-admin-tab="anime">
 <h3>Agregar anime</h3>
 <div class="admin-grid"><input id="aTitle" placeholder="Título"><input id="aSlug" placeholder="slug (ej. mi-anime)"></div>
 <textarea id="aSynopsis" placeholder="Sinopsis"></textarea>
@@ -32,12 +32,12 @@ header{height:70px;display:flex;align-items:center;gap:24px;padding:0 5%;backgro
 <input id="aGenres" placeholder="Géneros separados por coma">
 <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" onclick="addAnime()">➕ Agregar anime</button></div>
 <div id="adminList"></div></div>
-<div id="adminSeasonPanel" class="adminpanel" style="display:none">
+<div id="adminSeasonPanel" class="adminpanel" data-admin-tab="season" style="display:none">
 <h3>Crear temporada</h3><select id="sAnime"></select>
 <div class="admin-grid"><input id="sNumber" type="number" min="1" placeholder="Número de temporada"><input id="sTitle" placeholder="Título (opcional)"></div>
 <button class="btn primary" onclick="addSeason()">➕ Crear temporada</button><div id="seasonList" style="margin-top:14px"></div>
 </div>
-<div id="adminEpisodePanel" class="adminpanel" style="display:none">
+<div id="adminEpisodePanel" class="adminpanel" data-admin-tab="episode" style="display:none">
 <h3>Crear episodio</h3><select id="eAnime" onchange="loadAdminSeasons('eAnime','eSeason')"></select><select id="eSeason"></select>
 <div class="admin-grid"><input id="eNumber" type="number" min="1" placeholder="Número de episodio"><input id="eTitle" placeholder="Título"></div>
 <input id="eVideo" placeholder="URL directa del video (MP4/HLS autorizado)">
@@ -106,7 +106,7 @@ async function playEpisode(id){
   if(user){
    try{const h=await publicRest('watch_history?select=progress_seconds,completed&user_id=eq.'+encodeURIComponent(user.id)+'&episode_id=eq.'+encodeURIComponent(id)+'&limit=1');if(h[0]&&!h[0].completed)resume=Number(h[0].progress_seconds||0)}catch(_){}
   }
-  document.getElementById('player').innerHTML='<h2>'+esc(e.title)+'</h2><video id="video" controls playsinline style="width:100%;max-height:70vh;background:#000" src="'+esc(e.video_url||'')+'"></video>';
+  if(!e.video_url){document.getElementById('player').innerHTML='<h2>'+esc(e.title)+'</h2><div class="msg error">Este episodio todavía no tiene una fuente de video configurada.</div>';closeModal('animeModal');openModal('playerModal');return} document.getElementById('player').innerHTML='<h2>'+esc(e.title)+'</h2><video id="video" controls playsinline style="width:100%;max-height:70vh;background:#000" src="'+esc(e.video_url)+'"></video>';
   closeModal('animeModal');openModal('playerModal');
   const v=document.getElementById('video'); if(resume)v.currentTime=resume;
   const save=async completed=>{if(!user)return;try{
@@ -162,7 +162,7 @@ function showAdminMsg(msg,error=false){const el=document.getElementById('adminMs
 async function loadAdminAnime(target){if(!sb)return;const {data}=await sb.from('anime').select('id,title').order('title');const el=document.getElementById(target);if(el)el.innerHTML=(data||[]).map(a=>'<option value="'+a.id+'">'+esc(a.title)+'</option>').join('')||'<option value="">Sin anime</option>'}
 async function loadAdminSeasons(target,keep){if(!sb)return;const id=document.getElementById(target)?.value;if(!id)return;const {data}=await sb.from('seasons').select('*').eq('anime_id',id).order('season_number');const list=document.getElementById('seasonList');if(list)list.innerHTML=(data||[]).map(s=>'<div class="adminitem"><span>T'+s.season_number+' — '+esc(s.title||'Temporada '+s.season_number)+'</span><button class="btn danger mini" onclick="deleteSeason(\''+s.id+'\')">Eliminar</button></div>').join('')||'<p class="muted">No hay temporadas.</p>';const sel=document.getElementById('eSeason');if(sel)sel.innerHTML=(data||[]).map(s=>'<option value="'+s.id+'">T'+s.season_number+' — '+esc(s.title||'Temporada '+s.season_number)+'</option>').join('')||'<option value="">Sin temporadas</option>';if(sel)loadAdminEpisodes()}
 async function loadAdminEpisodes(){if(!sb)return;const sid=document.getElementById('eSeason')?.value;if(!sid)return;const {data}=await sb.from('episodes').select('*').eq('season_id',sid).order('episode_number');const el=document.getElementById('episodeList');if(el)el.innerHTML=(data||[]).map(e=>'<div class="adminitem"><span><b>E'+e.episode_number+'</b> — '+esc(e.title)+'</span><button class="btn danger mini" onclick="deleteEpisode(\''+e.id+'\')">Eliminar</button></div>').join('')||'<p class="muted">No hay episodios.</p>'}
-function showAdminTab(tab){document.querySelectorAll('[data-admin-tab]').forEach(x=>x.style.display=x.dataset.adminTab===tab?'block':'none')}
+function showAdminTab(tab){document.querySelectorAll('[data-admin-tab]').forEach(x=>x.style.display=x.dataset.adminTab===tab?'block':'none');document.querySelectorAll('.adminnav .btn').forEach(x=>x.classList.remove('active'));document.getElementById(tab==='anime'?'tabAnime':tab==='season'?'tabSeason':'tabEpisode')?.classList.add('active')}
 async function addAnime(){if(profile?.role!=='admin'||!sb)return;const v=id=>document.getElementById(id)?.value?.trim();const {error}=await sb.from('anime').insert({title:v('aTitle'),slug:v('aSlug'),synopsis:v('aSynopsis'),poster_url:v('aPoster'),banner_url:v('aBanner'),year:Number(v('aYear'))||null,rating:Number(v('aRating'))||null,genres:v('aGenres').split(',').map(x=>x.trim()).filter(Boolean)});showAdminMsg(error?.message||'Anime creado.',!!error);if(!error){await loadCatalog();await loadAdminAnime('sAnime');await loadAdminAnime('eAnime')}}
 async function addSeason(){if(profile?.role!=='admin'||!sb)return;const anime_id=document.getElementById('sAnime').value,season_number=Number(document.getElementById('sNumber').value),title=document.getElementById('sTitle').value.trim();const {error}=await sb.from('seasons').insert({anime_id,season_number,title:title||('Temporada '+season_number)});showAdminMsg(error?.message||'Temporada creada.',!!error);if(!error){await loadAdminSeasons('sAnime')}}
 async function addEpisode(){if(profile?.role!=='admin'||!sb)return;const body={season_id:document.getElementById('eSeason').value,episode_number:Number(document.getElementById('eNumber').value),title:document.getElementById('eTitle').value.trim(),video_url:document.getElementById('eVideo').value.trim(),synopsis:document.getElementById('eSynopsis').value.trim(),published:document.getElementById('ePublished').checked};const {error}=await sb.from('episodes').insert(body);showAdminMsg(error?.message||'Episodio creado.',!!error);if(!error)await loadAdminEpisodes()}
@@ -177,7 +177,7 @@ document.getElementById('authBtn')?.addEventListener('click',async()=>{if(user&&
 document.getElementById('heroAuth')?.addEventListener('click',()=>openModal('authModal'));
 document.getElementById('authSubmit')?.addEventListener('click',submitAuth);
 document.getElementById('toggleAuth')?.addEventListener('click',toggleAuthMode);
-document.getElementById('eSeason')?.addEventListener('change',loadAdminEpisodes);
+document.getElementById('eAnime')?.addEventListener('change',()=>loadAdminSeasons('eAnime','eSeason'));document.getElementById('eSeason')?.addEventListener('change',loadAdminEpisodes);
 
 window.addEventListener('error',e=>console.error('AnimeNova error',e.error||e.message));
 window.addEventListener('unhandledrejection',e=>console.error('AnimeNova rejection',e.reason));
