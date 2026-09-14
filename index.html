@@ -54,7 +54,7 @@ header{height:70px;display:flex;align-items:center;gap:24px;padding:0 5%;backgro
 <script>
 const SUPABASE_URL='https://bhwvjxrenahsntigxuvy.supabase.co';
 const SUPABASE_KEY='sb_publishable_KJczwALk5beg8nqhhqm1Rw_ssKW3s_M';
-let sb=null,user=null,profile=null,authMode='login',allAnime=[],historyRows=[];
+let sb=null,user=null,profile=null,isAdmin=false,authMode='login',allAnime=[],historyRows=[];
 
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
 function openModal(id){document.getElementById(id)?.classList.add('open')}
@@ -143,15 +143,18 @@ async function refreshSession(){
  const {data}=await sb.auth.getUser(); user=data?.user||null;
  if(user){
   const {data:p}=await sb.from('profiles').select('*').eq('id',user.id).maybeSingle();profile=p||null;
+  let rpcAdmin=false;
+  try{const r=await sb.rpc('is_admin');rpcAdmin=r.data===true||r.data?.is_admin===true}catch(_){}
+  isAdmin=rpcAdmin||profile?.role==='admin';
   document.getElementById('authBtn').textContent='Salir';
-  document.getElementById('adminSection').style.display=profile?.role==='admin'?'block':'none';
-  document.getElementById('adminNav').style.display=profile?.role==='admin'?'inline':'none';
+  document.getElementById('adminSection').style.display=isAdmin?'block':'none';
+  document.getElementById('adminNav').style.display=isAdmin?'inline':'none';
  }else{
-  profile=null;document.getElementById('authBtn').textContent='Entrar';document.getElementById('adminSection').style.display='none';document.getElementById('adminNav').style.display='none';
+  profile=null;isAdmin=false;document.getElementById('authBtn').textContent='Entrar';document.getElementById('adminSection').style.display='none';document.getElementById('adminNav').style.display='none';
  }
  await Promise.all([loadFavorites(),loadHistory(),loadCatalog()]);
  if(location.pathname==='/admin' || location.pathname.startsWith('/admin/')){
-  if(profile?.role==='admin'){
+  if(isAdmin){
    document.getElementById('adminSection').style.display='block';
    renderAdmin();
    document.getElementById('adminSection').scrollIntoView({behavior:'smooth',block:'start'});
