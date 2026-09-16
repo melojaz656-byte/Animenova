@@ -104,7 +104,10 @@ async function session(){
  if(user){const {data:p}=await sb.from('profiles').select('*').eq('id',user.id).maybeSingle();profile=p;admin=p?.role==='admin'}else{profile=null;admin=false}
  $('authBtn').textContent=user?'Salir':'Entrar';$('adminLink').style.display=admin?'inline':'none';$('admin').style.display=admin?'block':'none';
  await Promise.all([loadAnime(),loadFavorites(),loadHistory()]);
- if(new URLSearchParams(location.search).get('admin')==='1'){document.querySelector('#admin')?.scrollIntoView({behavior:'smooth'});}
+ if(new URLSearchParams(location.search).get('admin')==='1'){
+  if(admin){$('admin').style.display='block';setTimeout(()=>document.querySelector('#admin')?.scrollIntoView({behavior:'smooth'}),100);}
+  else{openAuth();$('authMsg').innerHTML='<div class="msg success">Inicia sesión con tu cuenta de administrador para continuar.</div>';}
+}
 }
 async function adminCheck(){if(!admin){openAuth();return true}return false}
 async function fillSelect(id){
