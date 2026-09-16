@@ -1,204 +1,140 @@
 <!doctype html>
-<html lang="es"><head>
+<html lang="es">
+<head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AnimeNova — Anime para todos</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2'"></script>
+<title>AnimeNova — Tu mundo de anime</title>
+<meta name="description" content="AnimeNova: catálogo, episodios, favoritos e historial.">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root{--bg:#050811;--panel:#0b1220;--panel2:#111b2c;--text:#f5f7fb;--muted:#93a0b5;--accent:#ff174f;--line:#1d2b43}
-*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 75% -10%,#202746 0,#050811 45%);color:var(--text);font-family:Inter,system-ui,Segoe UI,sans-serif}a{text-decoration:none;color:inherit}button,input,textarea,select{font:inherit}button{cursor:pointer}
-header{height:70px;display:flex;align-items:center;gap:24px;padding:0 5%;background:#060b15eF;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20;backdrop-filter:blur(14px)}.logo{font-size:25px;font-weight:900}.logo span{color:var(--accent)}nav{display:flex;gap:18px;color:#aab5c7;font-size:14px}nav a:hover{color:white}.search{margin-left:auto;width:220px;padding:9px 12px;border-radius:9px;border:1px solid #283a56;background:#0b1525;color:white;outline:none}.btn{border:0;border-radius:8px;padding:10px 15px;font-weight:800}.primary{background:var(--accent);color:#fff}.ghost{background:#101c2e;border:1px solid #2b415e;color:#fff}.hero{min-height:560px;padding:90px 5%;display:flex;align-items:end;background:linear-gradient(90deg,#050811 0,#050811e8 40%,#05081155 75%,#050811 100%),radial-gradient(circle at 76% 46%,#63204a,#1b2948 30%,#050811 68%)}.hero h1{font-size:clamp(46px,7vw,84px);line-height:.92;margin:15px 0}.hero p{max-width:600px;color:#b8c2d2;line-height:1.7}.tag{display:inline-block;background:var(--accent);padding:6px 9px;border-radius:5px;font-size:10px;font-weight:900;letter-spacing:.08em}.actions{display:flex;gap:10px;margin-top:22px}.section{max-width:1500px;margin:auto;padding:35px 5%}.sectionhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.sectionhead h2{margin:0;font-size:21px}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}.card{overflow:hidden;border:1px solid var(--line);background:var(--panel);border-radius:10px;transition:.2s}.card:hover{transform:translateY(-4px);border-color:#405879}.poster{height:255px;background:linear-gradient(135deg,#172740,#3b1630);display:flex;align-items:end;padding:11px}.poster span{background:#000a;padding:5px 8px;border:1px solid #ffffff25;border-radius:6px;font-size:10px}.cardbody{padding:10px 11px 12px}.card h3{font-size:14px;margin:0 0 5px}.card small{color:var(--muted)}.continue{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.continue .item{padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:10px}.bar{height:4px;background:#1b2940;border-radius:4px;margin-top:12px}.bar i{display:block;height:100%;background:var(--accent);border-radius:4px}.features{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:30px 5%;border-block:1px solid var(--line)}.feature{padding:20px;background:var(--panel);border:1px solid var(--line);border-radius:10px}.feature b,.feature small{display:block;margin-top:7px}.feature small{color:var(--muted)}footer{text-align:center;padding:35px;color:#718097;border-top:1px solid var(--line)}.modal{display:none;position:fixed;inset:0;background:#000c;z-index:50;place-items:center;padding:20px}.modal.open{display:grid}.box{width:min(520px,100%);max-height:90vh;overflow:auto;background:#091322;border:1px solid #29405e;border-radius:14px;padding:24px}.close{float:right;background:none;border:0;color:#91a0b5;font-size:24px}.box input,.box textarea,.box select{width:100%;margin:7px 0;padding:11px;background:#06101d;border:1px solid #29405e;color:#fff;border-radius:8px}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.msg{padding:10px;border-radius:8px;margin:10px 0;background:#101d2f}.error{background:#3b1220;color:#ffb3c2}.success{background:#123522;color:#b8f5cf}.episode{display:flex;justify-content:space-between;gap:10px;padding:12px;border:1px solid var(--line);border-radius:8px;margin:8px 0;background:var(--panel)}video{width:100%;max-height:70vh;background:#000;border-radius:10px}
-@media(max-width:1050px){.grid{grid-template-columns:repeat(4,1fr)}.search{width:170px}}@media(max-width:700px){header{gap:10px;padding:0 4%}nav{display:none}.search{width:120px}.hero{min-height:500px}.grid{grid-template-columns:repeat(2,1fr)}.poster{height:230px}.continue,.features{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr}}
-.adminnav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.adminnav button.active{background:var(--accent)}.adminpanel{background:#07101d;border:1px solid var(--line);border-radius:10px;padding:16px;margin-top:12px}.adminitem{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px;border-bottom:1px solid var(--line)}.adminitem:last-child{border-bottom:0}.mini{padding:7px 10px;font-size:12px}.danger{background:#35131d;border:1px solid #713047;color:#fff}.admin-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media(max-width:700px){.admin-grid{grid-template-columns:1fr}}</style></head>
+:root{--bg:#05050a;--panel:#0e0e16;--panel2:#141420;--line:#282735;--text:#f7f5fb;--muted:#9c99aa;--violet:#9b5cff;--pink:#ff3f9b;--cyan:#54e5ff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 80% -10%,#271343 0,#08070d 42%,#05050a 70%);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}a{text-decoration:none;color:inherit}
+header{position:sticky;top:0;z-index:20;height:72px;display:flex;align-items:center;gap:24px;padding:0 5%;background:#07070de8;border-bottom:1px solid var(--line);backdrop-filter:blur(18px)}
+.logo{font-weight:900;font-size:24px;letter-spacing:-1px}.logo span{color:var(--violet)}nav{display:flex;gap:18px;color:#aaa6b6;font-size:14px}nav a:hover{color:#fff}.search{margin-left:auto;width:230px;background:#0e0d16;border:1px solid #332e42;color:#fff;padding:10px 13px;border-radius:10px;outline:0}.btn{border:0;border-radius:10px;padding:10px 15px;font-weight:800}.primary{background:linear-gradient(135deg,var(--violet),var(--pink));color:#fff}.ghost{background:#11101a;color:#fff;border:1px solid #353143}.danger{background:#361322;color:#fff;border:1px solid #73324d}
+.hero{min-height:590px;display:flex;align-items:end;padding:90px 5%;background:linear-gradient(90deg,#05050a 0%,#05050ad9 40%,#05050a50 75%,#05050a 100%),radial-gradient(circle at 75% 40%,#70204d,#231044 28%,#05050a 68%)}.hero-inner{max-width:720px}.eyebrow{font-size:11px;font-weight:900;letter-spacing:.18em;color:#cdb8ff}.hero h1{font-size:clamp(52px,8vw,92px);line-height:.9;margin:14px 0}.hero h1 span{background:linear-gradient(90deg,#fff,var(--violet),var(--pink));background-clip:text;color:transparent}.hero p{color:#bdb8c8;line-height:1.7;max-width:610px}.actions{display:flex;gap:10px;margin-top:22px}
+.section{max-width:1500px;margin:auto;padding:40px 5%}.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}.head h2{margin:0;font-size:22px}.muted{color:var(--muted)}.grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}.card{overflow:hidden;background:linear-gradient(180deg,#11111a,#0b0b11);border:1px solid var(--line);border-radius:12px;transition:.2s}.card:hover{transform:translateY(-5px);border-color:#514268}.poster{height:270px;display:flex;align-items:end;padding:11px;background:linear-gradient(145deg,#19162a,#30183d)}.poster span{font-size:10px;font-weight:900;background:#000b;padding:5px 7px;border:1px solid #ffffff22;border-radius:6px}.body{padding:11px}.body h3{font-size:14px;margin:0 0 6px}.body small{color:var(--muted)}.empty{padding:25px;border:1px dashed #302c3d;border-radius:12px;color:var(--muted)}
+.features{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:28px 5%;border-block:1px solid var(--line)}.feature{padding:20px;border:1px solid var(--line);background:#0d0d15;border-radius:12px}.feature b,.feature small{display:block;margin-top:7px}.feature small{color:var(--muted)}
+footer{text-align:center;padding:38px;color:#777285;border-top:1px solid var(--line)}
+.modal{display:none;position:fixed;inset:0;z-index:60;background:#000d;place-items:center;padding:20px}.modal.open{display:grid}.box{width:min(760px,100%);max-height:92vh;overflow:auto;background:#0b0b12;border:1px solid #383347;border-radius:16px;padding:24px;box-shadow:0 25px 80px #000}.close{float:right;background:none;border:0;color:#aaa;font-size:28px}.box input,.box textarea,.box select{width:100%;margin:7px 0 10px;background:#08080e;color:#fff;border:1px solid #363143;border-radius:9px;padding:11px}.box textarea{min-height:100px;resize:vertical}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.msg{padding:10px;border-radius:9px;background:#15131e;margin:10px 0}.error{background:#3a1421;color:#ffc1d2}.success{background:#12331f;color:#baf4cc}.episode{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px;margin:8px 0;background:#101019;border:1px solid var(--line);border-radius:9px}.adminnav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.adminpanel{background:#0f0f18;border:1px solid var(--line);border-radius:12px;padding:16px}.adminitem{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}.adminitem:last-child{border:0}.mini{padding:7px 10px;font-size:12px}.hidden{display:none}video{width:100%;background:#000;border-radius:10px;max-height:70vh}
+@media(max-width:1100px){.grid{grid-template-columns:repeat(4,1fr)}}@media(max-width:750px){header{gap:10px;padding:0 4%}nav{display:none}.search{width:130px}.hero{min-height:520px}.grid{grid-template-columns:repeat(2,1fr)}.poster{height:230px}.features{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr}}
+</style>
+</head>
 <body>
-<header><a class="logo" href="#inicio">Anime<span>Nova</span></a><nav><a href="#inicio">Inicio</a><a href="#catalogo">Catálogo</a><a href="#tendencias">Tendencias</a><a href="#lista">Mi Lista</a><a href="#historial">Historial</a><a id="adminNav" href="/admin" style="display:none;color:var(--accent);font-weight:800">⚙️ Admin</a></nav><input id="search" class="search" placeholder="🔎 Buscar anime"><button id="authBtn" class="btn primary">Entrar</button></header>
-<main id="inicio">
-<section class="hero"><div><span class="tag">ANIMENOVA</span><h1>Tu mundo de anime.</h1><p>Catálogo, favoritos, historial y episodios en un solo lugar. Inicia sesión para guardar tu progreso en la nube.</p><div class="actions"><button class="btn primary" onclick="document.getElementById('catalogo').scrollIntoView()">▶ Explorar catálogo</button><button class="btn ghost" id="heroAuth">Crear cuenta</button></div></div></section>
-<section class="section" id="catalogo"><div class="sectionhead"><h2>🔥 Catálogo</h2><span id="catalogStatus" class="muted"></span></div><div id="catalog" class="grid"></div></section>
-<section class="section" id="lista"><div class="sectionhead"><h2>❤️ Mi Lista</h2></div><div id="favorites" class="grid"></div></section>
-<section class="section" id="historial"><div class="sectionhead"><h2>▶ Continuar viendo</h2></div><div id="history" class="continue"></div></section>
-<section class="features"><div class="feature">▣<b>Tu cuenta</b><small>Datos guardados en Supabase</small></div><div class="feature">♡<b>Favoritos</b><small>Tu lista sincronizada</small></div><div class="feature">◷<b>Historial</b><small>Guarda tu progreso</small></div><div class="feature">▶<b>Reproductor</b><small>Usa las fuentes autorizadas que agregues</small></div></section>
-<section class="section" id="tendencias"><div class="sectionhead"><h2>✨ Destacados</h2></div><div id="featured" class="grid"></div></section>
-<section class="section" id="adminSection" style="display:none">
-<div class="sectionhead"><h2>⚙️ Panel administrador</h2><span class="muted">Gestiona AnimeNova sin tocar Supabase</span></div>
-<div class="box" style="width:100%;max-height:none">
-<div id="adminMsg"></div>
-<div class="adminnav"><button class="btn primary active" id="tabAnime" onclick="showAdminTab('anime')">🎬 Anime</button><button class="btn ghost" id="tabSeason" onclick="showAdminTab('season')">📚 Temporadas</button><button class="btn ghost" id="tabEpisode" onclick="showAdminTab('episode')">▶ Episodios</button></div>
-<div id="adminAnimePanel" class="adminpanel" data-admin-tab="anime">
-<h3>Agregar anime</h3>
-<div class="admin-grid"><input id="aTitle" placeholder="Título"><input id="aSlug" placeholder="slug (ej. mi-anime)"></div>
-<textarea id="aSynopsis" placeholder="Sinopsis"></textarea>
-<div class="admin-grid"><input id="aPoster" placeholder="URL del poster"><input id="aBanner" placeholder="URL del banner"></div>
-<div class="admin-grid"><input id="aYear" type="number" placeholder="Año"><input id="aRating" type="number" step=".1" min="0" max="10" placeholder="Rating 0-10"></div>
-<input id="aGenres" placeholder="Géneros separados por coma">
-<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary" onclick="addAnime()">➕ Agregar anime</button></div>
-<div id="adminList"></div></div>
-<div id="adminSeasonPanel" class="adminpanel" data-admin-tab="season" style="display:none">
-<h3>Crear temporada</h3><select id="sAnime"></select>
-<div class="admin-grid"><input id="sNumber" type="number" min="1" placeholder="Número de temporada"><input id="sTitle" placeholder="Título (opcional)"></div>
-<button class="btn primary" onclick="addSeason()">➕ Crear temporada</button><div id="seasonList" style="margin-top:14px"></div>
-</div>
-<div id="adminEpisodePanel" class="adminpanel" data-admin-tab="episode" style="display:none">
-<h3>Crear episodio</h3><select id="eAnime" onchange="loadAdminSeasons('eAnime','eSeason')"></select><select id="eSeason"></select>
-<div class="admin-grid"><input id="eNumber" type="number" min="1" placeholder="Número de episodio"><input id="eTitle" placeholder="Título"></div>
-<input id="eVideo" placeholder="URL directa del video (MP4/HLS autorizado)">
-<textarea id="eSynopsis" placeholder="Descripción del episodio"></textarea>
-<label style="display:flex;gap:8px;align-items:center;margin:8px 0"><input id="ePublished" type="checkbox" checked style="width:auto"> Publicar inmediatamente</label>
-<button class="btn primary" onclick="addEpisode()">➕ Crear episodio</button><div id="episodeList" style="margin-top:14px"></div>
-</div></div></section>
-</main><footer>AnimeNova · Plataforma de anime · Publica únicamente contenido del que tengas derechos de distribución.</footer>
+<header><a class="logo" href="#inicio">Anime<span>Nova</span></a><nav><a href="#catalogo">Catálogo</a><a href="#tendencias">Tendencias</a><a href="#lista">Mi lista</a><a href="#historial">Historial</a><a id="adminLink" href="#admin" style="display:none;color:#cbb4ff">⚙ Admin</a></nav><input id="search" class="search" placeholder="🔎 Buscar anime"><button id="authBtn" class="btn primary">Entrar</button></header>
 
-<div id="authModal" class="modal"><div class="box"><button class="close" onclick="closeModal('authModal')">×</button><span class="tag">ANIMENOVA</span><h2 id="authTitle">Iniciar sesión</h2><input id="email" type="email" placeholder="Correo electrónico"><input id="password" type="password" placeholder="Contraseña"><input id="username" placeholder="Usuario (solo al crear cuenta)" style="display:none"><div id="authMsg"></div><button id="authSubmit" class="btn primary" style="width:100%">Entrar</button><button id="toggleAuth" class="btn ghost" style="width:100%;margin-top:8px">Crear una cuenta</button></div></div>
+<main id="inicio">
+<section class="hero"><div class="hero-inner"><div class="eyebrow">✦ ANIMENOVA</div><h1>Tu mundo.<br><span>Tu anime.</span></h1><p>Una plataforma elegante para descubrir tus series, organizar favoritos y continuar tus episodios. El contenido lo administras tú.</p><div class="actions"><button class="btn primary" onclick="document.querySelector('#catalogo').scrollIntoView()">▶ Explorar catálogo</button><button class="btn ghost" onclick="openAuth()">Crear cuenta</button></div></div></section>
+
+<section class="section" id="catalogo"><div class="head"><h2>🔥 Catálogo</h2><span id="catalogStatus" class="muted">Cargando…</span></div><div id="catalog" class="grid"></div></section>
+<section class="section" id="lista"><div class="head"><h2>❤️ Mi lista</h2></div><div id="favorites" class="grid"></div></section>
+<section class="section" id="historial"><div class="head"><h2>▶ Continuar viendo</h2></div><div id="history"></div></section>
+<section class="section" id="tendencias"><div class="head"><h2>✨ Destacados</h2></div><div id="featured" class="grid"></div></section>
+<section class="features"><div class="feature">✦<b>Catálogo conectado</b><small>Contenido almacenado en Supabase</small></div><div class="feature">♡<b>Favoritos</b><small>Sincronizados con tu cuenta</small></div><div class="feature">◷<b>Historial</b><small>Continúa donde quedaste</small></div><div class="feature">⚙<b>Administrador</b><small>Gestiona anime, temporadas y episodios</small></div></section>
+
+<section class="section" id="admin" style="display:none"><div class="head"><h2>⚙️ Administración</h2><span class="muted">Solo administradores</span></div>
+<div class="adminnav"><button class="btn primary" id="tabAnime" onclick="adminTab('anime')">🎬 Anime</button><button class="btn ghost" id="tabSeason" onclick="adminTab('season')">📚 Temporadas</button><button class="btn ghost" id="tabEpisode" onclick="adminTab('episode')">▶ Episodios</button></div>
+<div id="adminMsg"></div>
+<div id="panelAnime" class="adminpanel"><h3>Agregar anime</h3><div class="row"><input id="aTitle" placeholder="Título"><input id="aSlug" placeholder="slug-unico"></div><textarea id="aDesc" placeholder="Sinopsis"></textarea><div class="row"><input id="aPoster" placeholder="URL de portada"><input id="aBanner" placeholder="URL de banner"></div><div class="row"><input id="aGenre" placeholder="Géneros, separados por coma"><input id="aYear" type="number" placeholder="Año"></div><div class="row"><input id="aRating" type="number" step=".1" min="0" max="10" placeholder="Puntuación 0-10"><label style="display:flex;align-items:center;gap:8px"><input id="aFeatured" type="checkbox" style="width:auto"> Destacado</label></div><button class="btn primary" onclick="addAnime()">➕ Publicar anime</button><div id="animeAdminList"></div></div>
+<div id="panelSeason" class="adminpanel hidden"><h3>Agregar temporada</h3><select id="sAnime"></select><div class="row"><input id="sNumber" type="number" min="1" placeholder="Número"><input id="sTitle" placeholder="Título opcional"></div><button class="btn primary" onclick="addSeason()">➕ Crear temporada</button><div id="seasonList"></div></div>
+<div id="panelEpisode" class="adminpanel hidden"><h3>Agregar episodio</h3><select id="eAnime"></select><select id="eSeason"></select><div class="row"><input id="eNumber" type="number" min="1" placeholder="Número de episodio"><input id="eTitle" placeholder="Título"></div><input id="eVideo" placeholder="URL del video (MP4/HLS autorizado)"><input id="eThumb" placeholder="URL de miniatura"><textarea id="eDesc" placeholder="Descripción"></textarea><label style="display:flex;gap:8px;align-items:center"><input id="ePublished" type="checkbox" checked style="width:auto"> Publicado</label><button class="btn primary" onclick="addEpisode()">➕ Crear episodio</button><div id="episodeList"></div></div>
+</section>
+</main>
+<footer>AnimeNova · Publica únicamente contenido del que tengas derechos de distribución.</footer>
+
+<div id="authModal" class="modal"><div class="box"><button class="close" onclick="closeModal('authModal')">×</button><div class="eyebrow">ANIMENOVA</div><h2 id="authTitle">Iniciar sesión</h2><input id="email" type="email" placeholder="Correo electrónico"><input id="password" type="password" placeholder="Contraseña"><input id="username" placeholder="Usuario" class="hidden"><div id="authMsg"></div><button class="btn primary" style="width:100%" onclick="submitAuth()" id="authSubmit">Entrar</button><button class="btn ghost" style="width:100%;margin-top:8px" onclick="toggleAuth()" id="authToggle">Crear una cuenta</button></div></div>
 <div id="animeModal" class="modal"><div class="box"><button class="close" onclick="closeModal('animeModal')">×</button><div id="animeDetail"></div></div></div>
-<div id="playerModal" class="modal"><div class="box" style="width:min(900px,100%)"><button class="close" onclick="closeModal('playerModal')">×</button><div id="player"></div></div></div>
+<div id="playerModal" class="modal"><div class="box"><button class="close" onclick="closeModal('playerModal')">×</button><div id="player"></div></div></div>
 
 <script>
-const SUPABASE_URL='https://bhwvjxrenahsntigxuvy.supabase.co';
-const SUPABASE_KEY='sb_publishable_KJczwALk5beg8nqhhqm1Rw_ssKW3s_M';
-let sb=null,user=null,profile=null,isAdmin=false,authMode='login',allAnime=[],historyRows=[];
+const SUPABASE_URL='https://ztrvntjjunkmaatuqngn.supabase.co';
+const SUPABASE_KEY='sb_publishable_WM62SrNqdOsf8hbgx4U1hA_7tSOFvfs';
+const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let user=null,profile=null,admin=false,authMode='login',anime=[];
 
+const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
-function openModal(id){document.getElementById(id)?.classList.add('open')}
-function closeModal(id){document.getElementById(id)?.classList.remove('open')}
-async function publicRest(path,options={}){
- const r=await fetch(SUPABASE_URL+'/rest/v1/'+path,{...options,headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,Accept:'application/json',...(options.headers||{})}});
- if(!r.ok) throw new Error('REST '+r.status+' '+await r.text());
- return r.json();
-}
+function openModal(id){$(id).classList.add('open')} function closeModal(id){$(id).classList.remove('open')}
+function openAuth(){openModal('authModal')}
+function msg(text,error=false){$('adminMsg').innerHTML='<div class="msg '+(error?'error':'success')+'">'+esc(text)+'</div>'}
+
 function card(a){
- const initials=esc((a.title||'AN').split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase());
- const bg=a.poster_url?'background-image:linear-gradient(#0000,#000b),url("'+encodeURI(a.poster_url)+'");background-size:cover;background-position:center;':'background:radial-gradient(circle at 70% 25%,#7d173e 0,transparent 38%),linear-gradient(145deg,#101b31,#080b13);';
- return '<article class="card" onclick="openAnime(\''+a.id+'\')"><div class="poster" style="'+bg+'">'+(!a.poster_url?'<strong style="font-size:32px;letter-spacing:2px">'+initials+'</strong>':'')+'<span>'+(a.status==='ongoing'?'EN EMISIÓN':'HD')+'</span></div><div class="cardbody"><h3>'+esc(a.title)+'</h3><small>'+esc((a.genres||[]).slice(0,2).join(' · '))+(a.rating?' · ⭐ '+esc(a.rating):'')+'</small></div></article>';
+ const style=a.poster_url?'background-image:linear-gradient(#0000,#000b),url("'+encodeURI(a.poster_url)+'");background-size:cover;background-position:center':'';
+ return '<article class="card" onclick="openAnime(\''+a.id+'\')"><div class="poster" style="'+style+'">'+(!a.poster_url?'<b style="font-size:30px">'+esc((a.title||'AN').slice(0,2).toUpperCase())+'</b>':'')+'<span>HD</span></div><div class="body"><h3>'+esc(a.title)+'</h3><small>'+esc(a.genre||'Anime')+(a.year?' · '+a.year:'')+(a.rating?' · ⭐ '+a.rating:'')+'</small></div></article>';
 }
-async function loadCatalog(){
- const status=document.getElementById('catalogStatus'); status.textContent='Cargando catálogo…';
- try{
-  allAnime=await publicRest('anime?select=*&order=featured.desc,created_at.desc');
-  renderCatalog(allAnime);
-  status.textContent=allAnime.length?allAnime.length+' títulos':'Sin títulos todavía';
-  const featured=document.getElementById('featured');
-  if(featured) featured.innerHTML=allAnime.filter(x=>x.featured).map(card).join('')||'<p class="muted">Aún no hay destacados.</p>';
-  if(profile?.role==='admin') renderAdmin();
- }catch(e){
-  console.error(e); status.textContent='Error: no se pudo cargar el catálogo';
-  document.getElementById('catalog').innerHTML='<p class="muted">No se pudo conectar con el catálogo.</p>';
- }
+async function loadAnime(){
+ const {data,error}=await sb.from('anime').select('*').eq('published',true).order('featured',{ascending:false}).order('created_at',{ascending:false});
+ anime=data||[];$('catalog').innerHTML=anime.map(card).join('')||'<div class="empty">Todavía no hay anime publicado. Entra al panel de administración para agregar el primero.</div>';$('catalogStatus').textContent=anime.length+' títulos';
+ $('featured').innerHTML=anime.filter(x=>x.featured).map(card).join('')||'<div class="empty">Todavía no hay destacados.</div>';
+ if(admin)renderAdmin();
 }
-function renderCatalog(list){document.getElementById('catalog').innerHTML=(list||[]).map(card).join('')||'<p class="muted">No hay resultados.</p>'}
-
 async function openAnime(id){
- const a=allAnime.find(x=>x.id===id); if(!a)return;
- let seasons=[]; try{seasons=await publicRest('seasons?select=id,season_number,title&anime_id=eq.'+encodeURIComponent(id)+'&order=season_number')}catch(e){console.error(e)}
- let html='<span class="tag">ANIME</span><h2>'+esc(a.title)+'</h2><p class="muted">'+esc(a.synopsis||'Sinopsis no disponible.')+'</p><p>'+esc((a.genres||[]).join(' · '))+'</p>';
- html+='<button class="btn ghost" onclick="toggleFav(\''+id+'\')">♡ Favorito</button>';
- if(!seasons.length) html+='<p class="muted" style="margin-top:20px">Todavía no hay temporadas publicadas.</p>';
- for(const s of seasons){
-  let eps=[]; try{eps=await publicRest('episodes?select=*&season_id=eq.'+encodeURIComponent(s.id)+'&published=eq.true&order=episode_number')}catch(e){console.error(e)}
-  html+='<h3 style="margin-top:28px">'+esc(s.title||('Temporada '+s.season_number))+'</h3>';
-  html+=(eps||[]).map(e=>'<div class="episode"><span><b>E'+e.episode_number+'</b> · '+esc(e.title)+'</span><button class="btn primary mini" onclick="playEpisode(\''+e.id+'\')">▶ Ver</button></div>').join('')||'<p class="muted">Sin episodios publicados.</p>';
+ const a=anime.find(x=>x.id===id);if(!a)return;
+ const {data:seasons}=await sb.from('seasons').select('*').eq('anime_id',id).order('season_number');
+ let html='<div class="eyebrow">ANIME</div><h2>'+esc(a.title)+'</h2><p class="muted">'+esc(a.description||'Sinopsis no disponible.')+'</p><p>'+esc(a.genre||'')+'</p><button class="btn ghost" onclick="favorite(\''+id+'\')">♡ Mi lista</button>';
+ for(const s of (seasons||[])){
+  const {data:eps}=await sb.from('episodes').select('*').eq('season_id',s.id).eq('published',true).order('episode_number');
+  html+='<h3 style="margin-top:24px">'+esc(s.title||('Temporada '+s.season_number))+'</h3>';
+  html+=(eps||[]).map(e=>'<div class="episode"><span><b>E'+e.episode_number+'</b> · '+esc(e.title||'Episodio '+e.episode_number)+'</span><button class="btn primary mini" onclick="play(\''+e.id+'\')">▶ Ver</button></div>').join('')||'<p class="muted">Sin episodios publicados.</p>';
  }
- document.getElementById('animeDetail').innerHTML=html; openModal('animeModal');
+ $('animeDetail').innerHTML=html;openModal('animeModal');
 }
-async function playEpisode(id){
- try{
-  const rows=await publicRest('episodes?select=*&id=eq.'+encodeURIComponent(id)); const e=rows[0];
-  if(!e){alert('Episodio no encontrado.');return}
-  let resume=0;
-  if(user){
-   try{const h=await publicRest('watch_history?select=progress_seconds,completed&user_id=eq.'+encodeURIComponent(user.id)+'&episode_id=eq.'+encodeURIComponent(id)+'&limit=1');if(h[0]&&!h[0].completed)resume=Number(h[0].progress_seconds||0)}catch(_){}
-  }
-  if(!e.video_url){document.getElementById('player').innerHTML='<h2>'+esc(e.title)+'</h2><div class="msg error">Este episodio todavía no tiene una fuente de video configurada.</div>';closeModal('animeModal');openModal('playerModal');return} document.getElementById('player').innerHTML='<h2>'+esc(e.title)+'</h2><video id="video" controls playsinline style="width:100%;max-height:70vh;background:#000" src="'+esc(e.video_url)+'"></video>';
-  closeModal('animeModal');openModal('playerModal');
-  const v=document.getElementById('video'); if(resume)v.currentTime=resume;
-  const save=async completed=>{if(!user)return;try{
-    const body={user_id:user.id,episode_id:id,progress_seconds:Math.floor(v.currentTime||0),completed};
-    await fetch(SUPABASE_URL+'/rest/v1/watch_history?on_conflict=user_id,episode_id',{method:'POST',headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+(sb?.auth? (await sb.auth.getSession()).data.session?.access_token||SUPABASE_KEY:SUPABASE_KEY),'Content-Type':'application/json',Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(body)});
-    loadHistory();
-  }catch(err){console.error(err)}};
-  v.addEventListener('timeupdate',()=>{if(Math.floor(v.currentTime)%10===0)save(false)});
-  v.addEventListener('ended',()=>save(true));
- }catch(e){console.error(e);alert('No se pudo abrir el episodio.')}
+async function play(id){
+ const {data:e}=await sb.from('episodes').select('*').eq('id',id).maybeSingle();if(!e)return;
+ if(!e.video_url){$('player').innerHTML='<h2>'+esc(e.title)+'</h2><div class="msg error">Este episodio todavía no tiene URL de video.</div>';closeModal('animeModal');openModal('playerModal');return}
+ $('player').innerHTML='<h2>'+esc(e.title)+'</h2><video id="video" controls playsinline src="'+esc(e.video_url)+'"></video>';
+ closeModal('animeModal');openModal('playerModal');
+ const v=$('video');
+ if(user){const {data:h}=await sb.from('watch_history').select('*').eq('user_id',user.id).eq('episode_id',id).maybeSingle();if(h&&!h.completed)v.currentTime=h.progress_seconds||0}
+ let last=-1;v.addEventListener('timeupdate',async()=>{if(!user)return;const sec=Math.floor(v.currentTime);if(sec%10===0&&sec!==last){last=sec;await sb.from('watch_history').upsert({user_id:user.id,episode_id:id,progress_seconds:sec,completed:false},{onConflict:'user_id,episode_id'})}});
+ v.addEventListener('ended',async()=>{if(user)await sb.from('watch_history').upsert({user_id:user.id,episode_id:id,progress_seconds:Math.floor(v.duration||0),completed:true},{onConflict:'user_id,episode_id'});loadHistory()});
 }
-async function toggleFav(id){
- if(!user){openModal('authModal');return}
- if(!sb)return;
- try{
-  const q=await sb.from('favorites').select('id').eq('user_id',user.id).eq('anime_id',id).maybeSingle();
-  if(q.data) await sb.from('favorites').delete().eq('id',q.data.id); else await sb.from('favorites').insert({user_id:user.id,anime_id:id});
-  await loadFavorites();
- }catch(e){console.error(e)}
-}
-async function loadFavorites(){
- const el=document.getElementById('favorites'); if(!user||!sb){el.innerHTML='<p class="muted">Inicia sesión para guardar favoritos.</p>';return}
- const {data}=await sb.from('favorites').select('anime_id,anime(*)').eq('user_id',user.id);
- el.innerHTML=(data||[]).map(x=>x.anime?card(x.anime):'').join('')||'<p class="muted">No tienes favoritos todavía.</p>';
-}
-async function loadHistory(){
- const el=document.getElementById('history'); if(!user||!sb){el.innerHTML='<p class="muted">Inicia sesión para guardar tu progreso.</p>';return}
- const {data}=await sb.from('watch_history').select('episode_id,progress_seconds,completed,episodes(*,seasons(*,anime(*)))').eq('user_id',user.id).order('updated_at',{ascending:false}).limit(12);
- historyRows=data||[];
- el.innerHTML=historyRows.map(x=>{const e=x.episodes,a=e?.seasons?.anime;if(!e||!a)return '';return '<div class="continueitem"><div><b>'+esc(a.title)+'</b><br><span class="muted">E'+e.episode_number+' · '+esc(e.title)+'</span></div><button class="btn primary mini" onclick="playEpisode(\''+e.id+'\')">▶ '+(x.completed?'Ver de nuevo':'Continuar')+'</button></div>'}).join('')||'<p class="muted">No hay episodios en tu historial.</p>';
-}
-async function refreshSession(){
- if(!sb){await loadCatalog();return}
- const {data}=await sb.auth.getUser(); user=data?.user||null;
- if(user){
-  const {data:p}=await sb.from('profiles').select('*').eq('id',user.id).maybeSingle();profile=p||null;
-  let rpcAdmin=false;
-  try{const r=await sb.rpc('is_admin');rpcAdmin=r.data===true||r.data?.is_admin===true}catch(_){}
-  isAdmin=rpcAdmin||profile?.role==='admin';
-  document.getElementById('authBtn').textContent='Salir';
-  document.getElementById('adminSection').style.display=isAdmin?'block':'none';
-  document.getElementById('adminNav').style.display=isAdmin?'inline':'none';
- }else{
-  profile=null;isAdmin=false;document.getElementById('authBtn').textContent='Entrar';document.getElementById('adminSection').style.display='none';document.getElementById('adminNav').style.display='none';
- }
- await Promise.all([loadFavorites(),loadHistory(),loadCatalog()]);
- if(location.pathname==='/admin' || location.pathname.startsWith('/admin/')){
-  if(isAdmin){
-   document.getElementById('adminSection').style.display='block';
-   renderAdmin();
-   document.getElementById('adminSection').scrollIntoView({behavior:'smooth',block:'start'});
-  }else{
-   document.getElementById('authMsg').innerHTML='<div class="msg error">Inicia sesión con una cuenta de administrador para entrar aquí.</div>';
-   openModal('authModal');
-  }
- }
-}
-function toggleAuthMode(){authMode=authMode==='login'?'signup':'login';document.getElementById('authTitle').textContent=authMode==='login'?'Iniciar sesión':'Crear cuenta';document.getElementById('authSubmit').textContent=authMode==='login'?'Entrar':'Registrarme';document.getElementById('toggleAuth').textContent=authMode==='login'?'Crear una cuenta':'Ya tengo una cuenta';document.getElementById('username').style.display=authMode==='login'?'none':'block'}
+async function favorite(id){if(!user){openAuth();return}const {data}=await sb.from('favorites').select('anime_id').eq('user_id',user.id).eq('anime_id',id).maybeSingle();if(data)await sb.from('favorites').delete().eq('user_id',user.id).eq('anime_id',id);else await sb.from('favorites').insert({user_id:user.id,anime_id:id});loadFavorites()}
+async function loadFavorites(){const el=$('favorites');if(!user){el.innerHTML='<div class="empty">Inicia sesión para guardar favoritos.</div>';return}const {data}=await sb.from('favorites').select('anime_id').eq('user_id',user.id);const ids=(data||[]).map(x=>x.anime_id);el.innerHTML=anime.filter(a=>ids.includes(a.id)).map(card).join('')||'<div class="empty">Tu lista está vacía.</div>'}
+async function loadHistory(){const el=$('history');if(!user){el.innerHTML='<div class="empty">Inicia sesión para guardar tu progreso.</div>';return}const {data}=await sb.from('watch_history').select('*,episodes(id,title,episode_number,season_id,seasons(anime_id))').eq('user_id',user.id).order('updated_at',{ascending:false}).limit(10);el.innerHTML=(data||[]).map(h=>'<div class="episode"><span>▶ '+esc(h.episodes?.title||'Episodio')+' <small class="muted">'+(h.completed?'Completado':'Guardado')+'</small></span><button class="btn primary mini" onclick="play(\''+h.episode_id+'\')">Continuar</button></div>').join('')||'<div class="empty">Todavía no tienes historial.</div>'}
+
+function toggleAuth(){authMode=authMode==='login'?'signup':'login';$('authTitle').textContent=authMode==='login'?'Iniciar sesión':'Crear cuenta';$('authSubmit').textContent=authMode==='login'?'Entrar':'Registrarme';$('authToggle').textContent=authMode==='login'?'Crear una cuenta':'Ya tengo una cuenta';$('username').classList.toggle('hidden',authMode==='login')}
 async function submitAuth(){
- if(!sb)return; const email=document.getElementById('email').value.trim(),password=document.getElementById('password').value,msg=document.getElementById('authMsg'); if(!email||!password){msg.innerHTML='<div class="msg error">Completa correo y contraseña.</div>';return}
- const r=authMode==='login'?await sb.auth.signInWithPassword({email,password}):await sb.auth.signUp({email,password,options:{data:{username:document.getElementById('username').value.trim()},emailRedirectTo:window.location.origin+'/'}});
- if(r.error){msg.innerHTML='<div class="msg error">'+esc(r.error.message)+'</div>';return}
- msg.innerHTML='<div class="msg success">Cuenta lista. Revisa tu correo si se solicita confirmación.</div>';if(authMode==='login'){closeModal('authModal');await refreshSession()}
+ const email=$('email').value.trim(),password=$('password').value,msgEl=$('authMsg');if(!email||!password){msgEl.innerHTML='<div class="msg error">Completa correo y contraseña.</div>';return}
+ const r=authMode==='login'?await sb.auth.signInWithPassword({email,password}):await sb.auth.signUp({email,password,options:{data:{username:$('username').value.trim()}}});
+ if(r.error){msgEl.innerHTML='<div class="msg error">'+esc(r.error.message)+'</div>';return}
+ if(authMode==='signup'){msgEl.innerHTML='<div class="msg success">Cuenta creada. Si la confirmación por correo está activa, revisa tu correo y luego inicia sesión.</div>';return}
+ closeModal('authModal');await session();
 }
-function showAdminMsg(msg,error=false){const el=document.getElementById('adminMsg');if(el)el.innerHTML='<div class="msg '+(error?'error':'success')+'">'+esc(msg)+'</div>'}
-async function loadAdminAnime(target){if(!sb)return;const {data}=await sb.from('anime').select('id,title').order('title');const el=document.getElementById(target);if(el)el.innerHTML=(data||[]).map(a=>'<option value="'+a.id+'">'+esc(a.title)+'</option>').join('')||'<option value="">Sin anime</option>'}
-async function loadAdminSeasons(target,keep){if(!sb)return;const id=document.getElementById(target)?.value;if(!id)return;const {data}=await sb.from('seasons').select('*').eq('anime_id',id).order('season_number');const list=document.getElementById('seasonList');if(list)list.innerHTML=(data||[]).map(s=>'<div class="adminitem"><span>T'+s.season_number+' — '+esc(s.title||'Temporada '+s.season_number)+'</span><button class="btn danger mini" onclick="deleteSeason(\''+s.id+'\')">Eliminar</button></div>').join('')||'<p class="muted">No hay temporadas.</p>';const sel=document.getElementById('eSeason');if(sel)sel.innerHTML=(data||[]).map(s=>'<option value="'+s.id+'">T'+s.season_number+' — '+esc(s.title||'Temporada '+s.season_number)+'</option>').join('')||'<option value="">Sin temporadas</option>';if(sel)loadAdminEpisodes()}
-async function loadAdminEpisodes(){if(!sb)return;const sid=document.getElementById('eSeason')?.value;if(!sid)return;const {data}=await sb.from('episodes').select('*').eq('season_id',sid).order('episode_number');const el=document.getElementById('episodeList');if(el)el.innerHTML=(data||[]).map(e=>'<div class="adminitem"><span><b>E'+e.episode_number+'</b> — '+esc(e.title)+'</span><button class="btn danger mini" onclick="deleteEpisode(\''+e.id+'\')">Eliminar</button></div>').join('')||'<p class="muted">No hay episodios.</p>'}
-function showAdminTab(tab){document.querySelectorAll('[data-admin-tab]').forEach(x=>x.style.display=x.dataset.adminTab===tab?'block':'none');document.querySelectorAll('.adminnav .btn').forEach(x=>x.classList.remove('active'));document.getElementById(tab==='anime'?'tabAnime':tab==='season'?'tabSeason':'tabEpisode')?.classList.add('active')}
-async function addAnime(){if(profile?.role!=='admin'||!sb)return;const v=id=>document.getElementById(id)?.value?.trim();const {error}=await sb.from('anime').insert({title:v('aTitle'),slug:v('aSlug'),synopsis:v('aSynopsis'),poster_url:v('aPoster'),banner_url:v('aBanner'),year:Number(v('aYear'))||null,rating:Number(v('aRating'))||null,genres:v('aGenres').split(',').map(x=>x.trim()).filter(Boolean)});showAdminMsg(error?.message||'Anime creado.',!!error);if(!error){await loadCatalog();await loadAdminAnime('sAnime');await loadAdminAnime('eAnime')}}
-async function addSeason(){if(profile?.role!=='admin'||!sb)return;const anime_id=document.getElementById('sAnime').value,season_number=Number(document.getElementById('sNumber').value),title=document.getElementById('sTitle').value.trim();const {error}=await sb.from('seasons').insert({anime_id,season_number,title:title||('Temporada '+season_number)});showAdminMsg(error?.message||'Temporada creada.',!!error);if(!error){await loadAdminSeasons('sAnime')}}
-async function addEpisode(){if(profile?.role!=='admin'||!sb)return;const body={season_id:document.getElementById('eSeason').value,episode_number:Number(document.getElementById('eNumber').value),title:document.getElementById('eTitle').value.trim(),video_url:document.getElementById('eVideo').value.trim(),synopsis:document.getElementById('eSynopsis').value.trim(),published:document.getElementById('ePublished').checked};const {error}=await sb.from('episodes').insert(body);showAdminMsg(error?.message||'Episodio creado.',!!error);if(!error)await loadAdminEpisodes()}
-async function deleteSeason(id){if(!sb||!confirm('¿Eliminar esta temporada y sus episodios?'))return;const {error}=await sb.from('seasons').delete().eq('id',id);showAdminMsg(error?.message||'Temporada eliminada.',!!error);if(!error)await loadAdminSeasons('sAnime')}
-async function deleteEpisode(id){if(!sb||!confirm('¿Eliminar este episodio?'))return;const {error}=await sb.from('episodes').delete().eq('id',id);showAdminMsg(error?.message||'Episodio eliminado.',!!error);if(!error)await loadAdminEpisodes()}
-function renderAdmin(){const el=document.getElementById('adminList');if(el)el.innerHTML=allAnime.map(a=>'<div class="adminitem"><b>'+esc(a.title)+'</b><button class="btn ghost mini" onclick="showAdminFor(\''+a.id+'\')">Gestionar</button></div>').join('')||'<p class="muted">No hay anime.</p>';loadAdminAnime('sAnime');loadAdminAnime('eAnime')}
-function showAdminFor(id){document.getElementById('sAnime').value=id;showAdminTab('season');loadAdminSeasons('sAnime')}
-async function deleteAnime(id){if(!sb||!confirm('¿Eliminar este anime?'))return;const {error}=await sb.from('anime').delete().eq('id',id);showAdminMsg(error?.message||'Anime eliminado.',!!error);if(!error)await loadCatalog()}
+async function session(){
+ const {data}=await sb.auth.getUser();user=data?.user||null;
+ if(user){const {data:p}=await sb.from('profiles').select('*').eq('id',user.id).maybeSingle();profile=p;admin=p?.role==='admin'}else{profile=null;admin=false}
+ $('authBtn').textContent=user?'Salir':'Entrar';$('adminLink').style.display=admin?'inline':'none';$('admin').style.display=admin?'block':'none';
+ await Promise.all([loadAnime(),loadFavorites(),loadHistory()]);
+ if(new URLSearchParams(location.search).get('admin')==='1'){document.querySelector('#admin')?.scrollIntoView({behavior:'smooth'});}
+}
+async function adminCheck(){if(!admin){openAuth();return true}return false}
+async function fillSelect(id){
+ const {data}=await sb.from('anime').select('id,title').order('title');$(id).innerHTML=(data||[]).map(a=>'<option value="'+a.id+'">'+esc(a.title)+'</option>').join('')||'<option value="">Sin anime</option>';
+}
+async function seasonsFor(animeId,selectId){
+ const {data}=await sb.from('seasons').select('*').eq('anime_id',animeId).order('season_number');$(selectId).innerHTML=(data||[]).map(s=>'<option value="'+s.id+'">'+esc(s.title||('Temporada '+s.season_number))+'</option>').join('')||'<option value="">Sin temporadas</option>';return data||[];
+}
+async function addAnime(){if(await adminCheck())return;const body={title:$('aTitle').value.trim(),slug:$('aSlug').value.trim(),description:$('aDesc').value.trim(),poster_url:$('aPoster').value.trim()||null,banner_url:$('aBanner').value.trim()||null,genre:$('aGenre').value.trim(),year:Number($('aYear').value)||null,rating:Number($('aRating').value)||null,featured:$('aFeatured').checked,published:true};const {error}=await sb.from('anime').insert(body);msg(error?.message||'Anime publicado correctamente.',!!error);if(!error){['aTitle','aSlug','aDesc','aPoster','aBanner','aGenre','aYear','aRating'].forEach(id=>$(id).value='');$('aFeatured').checked=false;loadAnime()}}
+async function addSeason(){if(await adminCheck())return;const n=Number($('sNumber').value),{error}=await sb.from('seasons').insert({anime_id:$('sAnime').value,season_number:n,title:$('sTitle').value.trim()||('Temporada '+n)});msg(error?.message||'Temporada creada.',!!error);if(!error)loadAdminLists()}
+async function addEpisode(){if(await adminCheck())return;const body={season_id:$('eSeason').value,episode_number:Number($('eNumber').value),title:$('eTitle').value.trim()||('Episodio '+$('eNumber').value),video_url:$('eVideo').value.trim()||null,thumbnail_url:$('eThumb').value.trim()||null,description:$('eDesc').value.trim()||null,published:$('ePublished').checked};const {error}=await sb.from('episodes').insert(body);msg(error?.message||'Episodio creado.',!!error);if(!error)loadAdminLists()}
+function adminTab(t){['anime','season','episode'].forEach(x=>{$('panel'+x[0].toUpperCase()+x.slice(1)).classList.toggle('hidden',x!==t)});loadAdminLists()}
+async function loadAdminLists(){
+ if(!admin)return;
+ const {data:as}=await sb.from('anime').select('*').order('created_at',{ascending:false});
+ $('animeAdminList').innerHTML=(as||[]).map(a=>'<div class="adminitem"><span><b>'+esc(a.title)+'</b><br><small class="muted">'+esc(a.genre||'')+'</small></span><button class="btn danger mini" onclick="deleteAnime(\''+a.id+'\')">Eliminar</button></div>').join('')||'<p class="muted">No hay anime.</p>';
+ await fillSelect('sAnime');await fillSelect('eAnime');await seasonsFor($('eAnime').value,'eSeason');
+ const {data:ss}=await sb.from('seasons').select('*,anime(title)').order('anime_id').order('season_number');$('seasonList').innerHTML=(ss||[]).map(s=>'<div class="adminitem"><span>'+esc(s.anime?.title||'Anime')+' · '+esc(s.title||('T'+s.season_number))+'</span><button class="btn danger mini" onclick="deleteSeason(\''+s.id+'\')">Eliminar</button></div>').join('')||'<p class="muted">No hay temporadas.</p>';
+ const {data:ee}=await sb.from('episodes').select('*,seasons(title,anime(title))').order('created_at',{ascending:false});$('episodeList').innerHTML=(ee||[]).slice(0,30).map(e=>'<div class="adminitem"><span>'+esc(e.seasons?.anime?.title||'Anime')+' · E'+e.episode_number+' · '+esc(e.title)+'</span><button class="btn danger mini" onclick="deleteEpisode(\''+e.id+'\')">Eliminar</button></div>').join('')||'<p class="muted">No hay episodios.</p>';
+}
+async function deleteAnime(id){if(await adminCheck())return;if(!confirm('¿Eliminar este anime y todo su contenido?'))return;const {error}=await sb.from('anime').delete().eq('id',id);msg(error?.message||'Anime eliminado.',!!error);if(!error)loadAnime()}
+async function deleteSeason(id){if(await adminCheck())return;if(!confirm('¿Eliminar esta temporada y sus episodios?'))return;const {error}=await sb.from('seasons').delete().eq('id',id);msg(error?.message||'Temporada eliminada.',!!error);if(!error)loadAdminLists()}
+async function deleteEpisode(id){if(await adminCheck())return;if(!confirm('¿Eliminar este episodio?'))return;const {error}=await sb.from('episodes').delete().eq('id',id);msg(error?.message||'Episodio eliminado.',!!error);if(!error)loadAdminLists()}
+function renderAdmin(){if(!admin)return;$('admin').style.display='block';loadAdminLists()}
 
-document.getElementById('search')?.addEventListener('input',e=>{const q=e.target.value.toLowerCase();renderCatalog(allAnime.filter(a=>(a.title||'').toLowerCase().includes(q)||(a.genres||[]).some(g=>String(g).toLowerCase().includes(q))))});
-document.getElementById('authBtn')?.addEventListener('click',async()=>{if(user&&sb){await sb.auth.signOut();await refreshSession()}else openModal('authModal')});
-document.getElementById('heroAuth')?.addEventListener('click',()=>openModal('authModal'));
-document.getElementById('authSubmit')?.addEventListener('click',submitAuth);
-document.getElementById('toggleAuth')?.addEventListener('click',toggleAuthMode);
-document.getElementById('eAnime')?.addEventListener('change',()=>loadAdminSeasons('eAnime','eSeason'));document.getElementById('eSeason')?.addEventListener('change',loadAdminEpisodes);
-
-window.addEventListener('error',e=>console.error('AnimeNova error',e.error||e.message));
-window.addEventListener('unhandledrejection',e=>console.error('AnimeNova rejection',e.reason));
-
-(async()=>{
- try{
-  await loadCatalog();
-  const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';s.onload=async()=>{try{sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);sb.auth.onAuthStateChange(()=>setTimeout(refreshSession,0));await refreshSession()}catch(e){console.error(e)}};s.onerror=()=>console.warn('Auth library unavailable; public catalog remains active');document.head.appendChild(s);
- }catch(e){console.error(e)}
-})();
-</script></body></html>
+$('search').addEventListener('input',e=>{const q=e.target.value.toLowerCase();const filtered=anime.filter(a=>(a.title||'').toLowerCase().includes(q)||(a.genre||'').toLowerCase().includes(q));$('catalog').innerHTML=filtered.map(card).join('')||'<div class="empty">No encontramos resultados.</div>'});
+$('authBtn').addEventListener('click',async()=>{if(user){await sb.auth.signOut();await session()}else openAuth()});
+$('eAnime').addEventListener('change',()=>seasonsFor($('eAnime').value,'eSeason'));
+sb.auth.onAuthStateChange(()=>setTimeout(session,0));
+session();
+</script>
+</body>
+</html>
